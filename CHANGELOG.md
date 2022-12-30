@@ -1,17 +1,8 @@
-#### 2.1.2 (2022-04-22)
+#### 0.0.1 (2022-12-30)
 
 ##### Other Changes
 
-* **fix:**  issue with reconnecting mqtt client (bde14001)
-
-### 2.1.0 (2022-04-10)
-
-##### Other Changes (type)
-
-* **ci:**
-  *  fix issue with workflow and commit changelog on prerelease (74befa95)
-  *  Version 2.1.0 (9e9f0c13)
-* **feat:**
-  *  Required Changes for Loxberry Express 1.0 (b0881643)
-  *  add automatic release options (b8f9e65a)
-
+* **fix:**
+  *  fix postinstall script to start the background process (07aa05dd)
+  *  update dependencies (643381cd)
+* **feat:**  Initial version of the plugin (3d9e63aa)
