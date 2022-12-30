@@ -81,7 +81,7 @@
 <script>
 import { ref, computed } from 'vue';
 import { useStore } from 'vuex';
-import { useI18n } from 'vue-i18n/index';
+import { useI18n } from 'vue-i18n';
 import actionStore from '../store/actions';
 import validationRules from '../utils/validationRules';
 
