@@ -1,1 +1,5 @@
-{"interval":30,"topic":"MessageCenter/message2","mqtt":true}
+{
+  "interval": 30,
+  "topic": "MessageCenter/message",
+  "mqtt": true
+}

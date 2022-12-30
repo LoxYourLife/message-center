@@ -24,4 +24,10 @@ echo "<INFO> installing bin dependencies"
 npm --prefix $PBIN ci --only=production
 npm --prefix $PHTMLAUTH/express ci --only=production
 
+echo "<INFO> Start Event App"
+npm --prefix $PBIN run start
+
+echo "<INFO> Register Plugin at Express Server"
+curl -X POST http://localhost/admin/express/system/plugin/message_center
+
 exit 0;
