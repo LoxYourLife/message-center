@@ -1,0 +1,10 @@
+
+node_modules
+loxberry
+build
+coverage
+bin/.pm2
+.dev
+
+#config/messageCenter.json
+message_center.zip

@@ -1,0 +1,79 @@
+{
+  "name": "message-center",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": "github:LoxYourLife/message-center.git",
+  "config": {
+    "eslint": "--ignore-path .gitignore --cache --format=codeframe --max-warnings=0 \"{src,scripts,tests,.github}/**/*.{js,md,html}\" \"*.{js,md,html}\" \".*.{js,md,html}\"",
+    "prettier": "--ignore-path .gitignore --loglevel=warn \"{src,scripts,tests,.github}/**/*.{js,md,yml,json,html}\" \"*.{js,yml,json,html}\" \".*.{js,yml,json,html}\" \"!package-lock.json\"",
+    "release": {
+      "additionalNodeModules": [
+        "bin"
+      ],
+      "additionalCommands": [
+        {
+          "command": "npm run build",
+          "gitFiles": "webfrontend templates"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "dev": "nodemon --watch webfrontend/htmlauth --watch templates --exec 'node_modules/.bin/loxberryExpressDevServer' -- ./",
+    "app": "vite",
+    "build": "vite build && rm -rf webfrontend/htmlauth/assets && cp -r build/assets webfrontend/htmlauth/assets && cp build/build.html templates/index.hbs",
+    "serve": "vite preview",
+    "lint": "eslint bin",
+    "prettify": "prettier --write bin",
+    "zip": "rm -f message_center.zip && zip -r message_center.zip . -x \".git/*\" -x \"node_modules/*\" -x \"loxberry/*\" -x \"data/*\" -x \"coverage/*\" -x \"build/*\" -x \"bin/node_modules/*\" -x \"webfrontend/htmlauth/express/node_modules/*\"",
+    "release:major": "node .github/release.js major false",
+    "release:minor": "node .github/release.js minor false",
+    "release:patch": "node .github/release.js patch false",
+    "pre:major": "node .github/release.js major true",
+    "pre:minor": "node .github/release.js minor true",
+    "pre:patch": "node .github/release.js patch true"
+  },
+  "type": "commonjs",
+  "author": "Ronald Marske",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/preset-env": "7.16.11",
+    "@quasar/extras": "1.13.5",
+    "@quasar/vite-plugin": "1.0.9",
+    "@vitejs/plugin-vue": "2.3.1",
+    "@vue/vue3-jest": "27.0.0-alpha.4",
+    "@vueuse/core": "8.2.5",
+    "axios": "0.26.1",
+    "body-parser": "1.20.0",
+    "eslint": "7.32.0",
+    "express": "4.17.3",
+    "express-fileupload": "1.3.1",
+    "express-handlebars": "6.0.4",
+    "generate-changelog": "1.8.0",
+    "i18next": "21.6.14",
+    "jayson": "3.6.6",
+    "jest": "27.5.1",
+    "jest-each": "27.5.1",
+    "jest-extended": "2.0.0",
+    "jest-when": "3.5.1",
+    "lodash": "4.17.21",
+    "loxberry-express-dev-server": "1.0.1",
+    "minimist": ">=1.2.6",
+    "nock": "13.2.4",
+    "nodemon": "2.0.15",
+    "prettier": "2.4.0",
+    "prompts": "2.4.2",
+    "quasar": "2.6.5",
+    "read-ini-file": "3.0.1",
+    "sass": "1.50.0",
+    "supertest": "6.2.2",
+    "vite": "2.9.1",
+    "vue": "3.2.31",
+    "vue-i18n": "9.1.9",
+    "vue-router": "4.0.14",
+    "vuex": "4.0.2",
+    "write-ini-file": "3.0.2",
+    "ws": "8.5.0"
+  }
+}

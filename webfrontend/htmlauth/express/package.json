@@ -1,0 +1,9 @@
+{
+  "name": "loxberry-message-center",
+  "version": "0.0.1",
+  "author": "Ronald Marske",
+  "license": "APACHE 2.0",
+  "dependencies": {
+    "pm2": "5.2.2"
+  }
+}
