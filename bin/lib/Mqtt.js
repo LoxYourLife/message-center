@@ -38,9 +38,15 @@ module.exports = class Mqtt {
     this.client.end();
   }
 
-  send(topic, message) {
-    if (_.isNil(this.config)) return;
-    if (!this.client.connected) this.client.reconnect();
+  async send(topic, message) {
+    if (_.isNil(this.config)) {
+      console.info('NO Config for MQTT - not sending');
+      return;
+    }
+    if (!this.client.connected) {
+      console.info('MQTT not connected, reconnecting');
+      await this.connect();
+    }
     this.client.publish(topic, message);
   }
 };
