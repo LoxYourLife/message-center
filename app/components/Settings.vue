@@ -38,6 +38,7 @@
             {{$t('MESSAGE.NEED_MQTT')}}
           </q-banner>
           <q-input name="interval" :ref="formFields.interval" :disable="isSaving || isLoading" :loading="isLoading" v-model="config.interval" :label="$t('MESSAGE.INTERVAL')" :hint="$t('MESSAGE.INTERVAL_HINT')" :rules="validationRules.interval" data-role="none" />
+          <q-input name="message-center-id" :readonly="true" v-model="config.messageCenterId" :label="$t('MESSAGE.MESSAGE_CENTER_ID')" data-role="none" />
         </div>
 
         <div class="col-12 q-my-md">
@@ -57,6 +58,8 @@
         {{ $t('EXPLANATION.HOWTO') }}
       </p>
     </div>
+    <div class="col-6 col-md-5 col-lg-4 text-bold">{{ topicString }}_entryUuid</div>
+    <div class="col-6 col-md-7 col-lg-8">{{ $t('EXPLANATION.ENTRY_UUID') }}</div>
     <div class="col-6 col-md-5 col-lg-4 text-bold">{{ topicString }}_affectedName</div>
     <div class="col-6 col-md-7 col-lg-8">{{ $t('EXPLANATION.AFFECTED_NAME') }}</div>
     <div class="col-6 col-md-5 col-lg-4 text-bold">{{ topicString }}_desc</div>
@@ -65,6 +68,31 @@
     <div class="col-6 col-md-7 col-lg-8">{{ $t('EXPLANATION.SEVERITY') }}</div>
     <div class="col-6 col-md-5 col-lg-4 text-bold">{{ topicString }}_title</div>
     <div class="col-6 col-md-7 col-lg-8">{{ $t('EXPLANATION.TITLE') }}</div>
+    <div class="col-6 col-md-5 col-lg-4 text-bold">{{ topicString }}_hasConfirmAction</div>
+    <div class="col-6 col-md-7 col-lg-8">{{ $t('EXPLANATION.HAS_CONFIRM_ACTION') }}</div>
+  </div>
+  <div class="row q-pt-md">
+    <div class="col-12">
+      <div class="text-h6 self-end">
+        {{ $t('MESSAGE.AUTOMATIC_RESOLVE') }}
+        <q-separator spaced />
+      </div>
+      <p>
+        {{ $t('EXPLANATION.MARK_MESSAGE') }}
+      </p>
+    </div>
+    <div class="col-6 col-md-5 col-lg-4 text-bold">{{ $t('EXPLANATION.READ_URL') }}</div>
+    <div class="col-6 col-md-7 col-lg-8">
+      POST <span class="text-bold">{{loxberryAddress}}/admin/express/plugins/message_center/message/mark-as-read/<q-badge outline color="primary">enteryUuid</q-badge></span>
+    </div>
+    <div class="col-6 col-md-5 col-lg-4 text-bold">{{ $t('EXPLANATION.CONFIRM_URL') }}</div>
+    <div class="col-6 col-md-7 col-lg-8">
+      POST <span class="text-bold">{{loxberryAddress}}/admin/express/plugins/message_center/message/mark-as-confirmed/<q-badge outline color="primary">entryUuid</q-badge></span>
+    </div>
+    <div class="col-12 q-my-md">
+      <q-btn push color="light-green-7" icon="save" size="sm" :label="$t('EXPLANATION.DOWNLOAD_OUTPUTS')" href="/admin/express/plugins/message_center/getOutputs" target="_blank" />
+      <a class="q-mx-md" :href="$t('EXPLANATION.LOXONE_TEMPLATE_URL')" target="_blank"> {{ $t('EXPLANATION.TEMPLATE_HELP') }}</a>
+    </div>
   </div>
 
 </template>
@@ -100,7 +128,7 @@ export default {
     const isSaving = ref(false);
     const logUrl = computed(() => (service.value && service.value.log ? encodeURIComponent(service.value.log.out) : undefined));
     const topicString = computed(() => (config.value && config.value.topic ? config.value.topic.replaceAll('/', '_') : ''));
-
+    
     const formFields = {
       interval: ref(null),
       topic: ref(null)
@@ -136,7 +164,8 @@ export default {
       logUrl,
       topicString,
       saveSettings,
-      restartService
+      restartService,
+      loxberryAddress: document.location.origin
     };
   }
 };

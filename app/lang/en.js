@@ -16,16 +16,25 @@ export default {
     ONLINE: 'Online',
     OFFLINE: 'Offline',
     BACKGROUND_SERVICE: 'Background Service',
-    EXPLANATION: 'Explantion of the messages'
+    EXPLANATION: 'Explantion of the messages',
+    AUTOMATIC_RESOLVE: 'Automatic Resolve'
   },
   EXPLANATION: {
     HOWTO:
       'The plugin reads during the defined interval all system messages form the loxone miniserver and publishes them to MQTT. Within the Loxone config you could add the virtual inputs and use it to control someting.',
-
+    MARK_MESSAGE:
+      'The messages can be automatically resolved. To automaticvally read or confirm a message, the miniserver needs to send a HTTP POST request to the listed urls and pass the EntryUuid.',
+    ENTRY_UUID: 'Text: The unique id of the message - can be used to automatically read/confirm the messaage.',
     AFFECTED_NAME: 'Text: Name of the affected device',
     DESC: 'Text: The detailed description of the warning. This is useful for TTS output.',
     SEVERITY: 'Integer: The error level: 1: Info, 2: Warning, >3: Error',
-    TITLE: 'Text: A short title of the message.'
+    TITLE: 'Text: A short title of the message.',
+    HAS_CONFIRM_ACTION: 'Digital: Specifies if a message needs to be confirmed',
+    READ_URL: 'URL to automatically read a message',
+    CONFIRM_URL: 'URL to automatically confirm a message',
+    DOWNLOAD_OUTPUTS: 'Download Loxone Template',
+    TEMPLATE_HELP: 'Loxone Dokumentation for Templates',
+    LOXONE_TEMPLATE_URL: 'https://www.loxone.com/enen/kb/templates/'
   },
   VALIDATION: {
     REQUIRED: 'This field is required.',

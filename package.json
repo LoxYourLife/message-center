@@ -26,7 +26,7 @@
     "serve": "vite preview",
     "lint": "eslint bin",
     "prettify": "prettier --write bin",
-    "zip": "rm -f message_center.zip && zip -r message_center.zip . -x \".git/*\" -x \"node_modules/*\" -x \"loxberry/*\" -x \"data/*\" -x \"coverage/*\" -x \"build/*\" -x \"bin/node_modules/*\" -x \"webfrontend/htmlauth/express/node_modules/*\"",
+    "zip": "rm -f message_center.zip && zip -r message_center.zip . -x \".git/*\" -x \"node_modules/*\" -x \"loxberry/*\" -x \"data/*\" -x \"coverage/*\" -x \"build/*\" -x \"bin/node_modules/*\" -x \"bin/.pm2/*\" -x \"webfrontend/htmlauth/express/node_modules/*\"",
     "release:major": "node .github/release.js major false",
     "release:minor": "node .github/release.js minor false",
     "release:patch": "node .github/release.js patch false",

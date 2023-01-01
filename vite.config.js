@@ -33,7 +33,7 @@ module.exports = defineConfig(({ command, mode }) => {
     server: {
       port: 9000,
       proxy: {
-        '/admin/express/plugins/message_center/api': {
+        '/admin/express/plugins/message_center': {
           target: 'http://localhost:3300/',
           changeOrigin: true
           //rewrite: (path) => console.log(path)

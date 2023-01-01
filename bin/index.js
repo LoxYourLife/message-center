@@ -3,7 +3,7 @@ const Mqtt = require('./lib/Mqtt');
 const fs = require('fs');
 const directories = require('./lib/directories');
 const axios = require('axios');
-
+const { writeJson } = require('./lib/fileHandler');
 const configFile = `${directories.config}/messageCenter.json`;
 const globalConfigFile = `${directories.homedir}/config/system/general.json`;
 
@@ -13,8 +13,7 @@ let lastMessage = null;
 let messageId = null;
 
 const miniserverEntries = _.get(globalConfig, 'Miniserver', {});
-const miniserver = _.get(_.values(miniserverEntries), 0);
-
+const miniserver = _.head(_.values(miniserverEntries));
 const mqtt = new Mqtt(globalConfig);
 
 fs.watch(configFile, {}, () => {
@@ -26,6 +25,14 @@ fs.watch(configFile, {}, () => {
     //
   }
 });
+
+const saveMessageIdToConfig = async (messageId) => {
+  const currentMessageId = _.get(config, 'messageCenterId');
+  if (currentMessageId != messageId) {
+    config.messageCenterId = messageId;
+    return writeJson(configFile, config);
+  }
+};
 
 const hasMqttInstalled = async () => {
   if (_.get(globalConfig, 'Mqtt', null) === null) {
@@ -39,6 +46,7 @@ const hasMqttInstalled = async () => {
 const fetchStatus = async (messageId) => {
   try {
     const response = await axios.get(`http://${miniserver.Ipaddress}/jdev/sps/io/${messageId}/getEntries`, {
+      //const response = await axios.get(`http://localhost:3300/admin/express/plugins/message_center/messages`, {
       timeout: 900,
       withCredentials: true,
       auth: {
@@ -69,7 +77,14 @@ const getMessageId = async () => {
     }
   });
 
-  return _.first(_.keys(response.data.messageCenter));
+  const messageCenterId = _.first(_.keys(response.data.messageCenter));
+  try {
+    await saveMessageIdToConfig(messageCenterId);
+  } catch {
+    console.error('cannot write message center id to config file');
+  }
+
+  return messageCenterId;
 };
 
 const getAndSendMessages = async () => {
@@ -78,17 +93,19 @@ const getAndSendMessages = async () => {
   }
   const message = await fetchStatus(messageId);
   const newMessage = {
-    affectedName: _.get(message, 'affectedName', null),
-    title: _.get(message, 'title', null),
-    desc: _.get(message, 'desc', null),
-    severity: _.get(message, 'severity', 0)
+    entryUuid: _.get(message, 'entryUuid', ''),
+    affectedName: _.get(message, 'affectedName', ''),
+    title: _.get(message, 'title', ''),
+    desc: _.get(message, 'desc', ''),
+    severity: _.get(message, 'severity', 0),
+    hasConfirmAction: _.find(_.get(message, 'actions', []), (action) => _.get(action, 'actionId', null) === 1005) !== undefined
   };
 
   if (!_.isEqual(newMessage, lastMessage)) {
     lastMessage = newMessage;
-    console.log('New system message on miniserver. sending:', newMessage);
+    console.log(`New system message on miniserver. sending to topic ${config.topic}:`, newMessage);
 
-    mqtt.send(config.topic, JSON.stringify(newMessage));
+    await mqtt.send(config.topic, JSON.stringify(newMessage));
   }
 };
 

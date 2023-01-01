@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VirtualOut Title="Loxberry Message Center" Comment="Created by LoxBerry Message Center Plugin"
+  Address="http://&lt;user&gt;:&lt;password&gt;@{{ip}}" CmdInit="" CloseAfterSend="true" CmdSep="">
+  <Info templateType="3" minVersion="13011117" />
+  <VirtualOutCmd Title="Read Message" Comment="" CmdOnMethod="GET" CmdOffMethod="GET"
+    CmdOn="/admin/express/plugins/message_center/message/mark-as-read/&lt;v&gt;" CmdOnHTTP="" CmdOnPost="" CmdOff=""
+    CmdOffHTTP="" CmdOffPost="" Analog="true" Repeat="0" RepeatRate="0" />
+  <VirtualOutCmd Title="Confirm Message" Comment="" CmdOnMethod="GET" CmdOffMethod="GET"
+    CmdOn="/admin/express/plugins/message_center/message/mark-as-confirmed/&lt;v&gt;" CmdOnHTTP="" CmdOnPost=""
+    CmdOff="" CmdOffHTTP="" CmdOffPost="" Analog="true" Repeat="0" RepeatRate="0" />
+</VirtualOut>
