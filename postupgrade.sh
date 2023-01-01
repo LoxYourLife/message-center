@@ -33,7 +33,7 @@ npm --prefix $PBIN ci --only=production
 
 
 echo "<INFO> Start Event App"
-npm --prefix $PBIN run start
+npm --prefix $PBIN run restart
 
 echo "<INFO> Register Plugin at Express Server"
 curl -X POST http://localhost/admin/express/system/plugin/message_center
