@@ -1,3 +1,12 @@
+#### 0.0.3 (2023-01-03)
+
+##### Other Changes
+
+* **fix:**
+  *  fix issue with doubled increased version number in changelog (85cc9063)
+  *  Fix error message text to indicate that express is missing (f05aa2fe)
+* **refactor:**   Use Loglevel from plugin, fix message sending, use async-mqttt (53de909f)
+
 #### 0.0.2 (2023-01-01)
 
 ##### Other Changes
