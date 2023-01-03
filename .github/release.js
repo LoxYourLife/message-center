@@ -86,6 +86,16 @@ const updateNpm = ({ version, prefix, isPrerelease }) => {
     console.error(e.message);
   }
 };
+const getVersion = ({ version, prefix, isPrerelease }) => {
+  prefix = prefix ? ` --prefix ${prefix}` : '';
+  const preid = isPrerelease ? ' --preid rc' : '';
+  const command = `npm${prefix}${preid} --no-git-tag-version version ${version} --dry-run`;
+  try {
+    return execSync(command).toString();
+  } catch (e) {
+    console.error(e.message);
+  }
+};
 
 const gitStatus = () => execSync('git status', { stdio: 'inherit' });
 const gitReset = (files, staged) => execSync(`git restore ${staged ? '--staged ' : ''}${files.join(' ')}`);
@@ -226,6 +236,8 @@ const run = async () => {
 
   const githubUrl = getGithubUrl();
 
+  generateChangelog(newVersion);
+
   updateNpm({ version: newVersion, isPrerelease });
   const package = getPackage();
   const version = package.version;
@@ -247,8 +259,6 @@ const run = async () => {
     await updateReleaseCfg(version, githubUrl);
   }
 
-  console.log('generating changelog ...');
-  generateChangelog(newVersion);
   console.log('generate new build');
 
   config.additionalCommands.forEach((command) => {
