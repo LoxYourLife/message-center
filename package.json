@@ -9,7 +9,8 @@
     "prettier": "--ignore-path .gitignore --loglevel=warn \"{src,scripts,tests,.github}/**/*.{js,md,yml,json,html}\" \"*.{js,yml,json,html}\" \".*.{js,yml,json,html}\" \"!package-lock.json\"",
     "release": {
       "additionalNodeModules": [
-        "bin"
+        "bin",
+        "webfrontend/htmlauth/express"
       ],
       "additionalCommands": [
         {

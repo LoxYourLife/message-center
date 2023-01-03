@@ -1,9 +1,10 @@
-const mqtt = require('mqtt');
+const mqtt = require('async-mqtt');
 const _ = require('lodash');
 
 module.exports = class Mqtt {
-  constructor(globalConfig) {
+  constructor(globalConfig, logger) {
     this.setConfig(globalConfig);
+    this.logger = logger;
   }
 
   setConfig(globalConfig) {
@@ -15,38 +16,50 @@ module.exports = class Mqtt {
       throw new Error('Cant connect to MQTT. Configuration is missing');
     }
     const connectUrl = `mqtt://${this.config.Brokerhost}:${this.config.Brokerport}`;
+    this.logger.debug(`connecting to MQTT using ${connectUrl}`);
 
-    return new Promise(
-      function (resolve) {
-        this.client = mqtt.connect(connectUrl, {
-          username: this.config.Brokeruser,
-          password: this.config.Brokerpass,
-          clientId: 'MessageCenter',
-          keepalive: 300,
-          reconnectPeriod: 0,
-          queueQoSZero: false
-        });
+    try {
+      this.client = await mqtt.connectAsync(connectUrl, {
+        username: this.config.Brokeruser,
+        password: this.config.Brokerpass,
+        clientId: 'MessageCenter',
+        keepalive: 300,
+        reconnectPeriod: 0,
+        queueQoSZero: false
+      });
 
-        this.client.on('connect', resolve);
-        this.client.on('packetreceive', () => {});
-      }.bind(this)
-    );
+      this.client.on('connect', () => {
+        this.logger.debug('connected to mqtt');
+      });
+      this.client.on('disconnect', () => {
+        this.logger.debug('disconnected from mqtt');
+      });
+
+      this.client.on('packetreceive', () => {});
+    } catch (error) {
+      this.logger.error('Error during mqtt connection', error);
+    }
   }
 
-  disconnect() {
+  async disconnect() {
     if (!this.client) return;
-    this.client.end();
+    await this.client.end();
   }
 
   async send(topic, message) {
     if (_.isNil(this.config)) {
-      console.info('NO Config for MQTT - not sending');
+      this.logger.debug('NO Config for MQTT - not sending anything');
       return;
     }
-    if (!this.client.connected) {
-      console.info('MQTT not connected, reconnecting');
-      await this.connect();
+
+    try {
+      if (!this.client.connected) {
+        this.logger.debug('MQTT not connected, reconnecting');
+        this.client.reconnect();
+      }
+      await this.client.publish(topic, message, { retain: true });
+    } catch (error) {
+      this.logger.error('error while sending mqtt message', error);
     }
-    this.client.publish(topic, message);
   }
 };

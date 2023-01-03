@@ -4,23 +4,50 @@ const fs = require('fs');
 const directories = require('./lib/directories');
 const axios = require('axios');
 const { writeJson } = require('./lib/fileHandler');
+const Logger = require('./lib/Logger');
+
 const configFile = `${directories.config}/messageCenter.json`;
 const globalConfigFile = `${directories.homedir}/config/system/general.json`;
+const globalPluginDbFile = `${directories.systemData}/plugindatabase.json`;
+
+const getPluginLogLevel = () => {
+  const pluginData = _.find(globalPluginDb.plugins, (entry) => entry.name === 'message_center');
+  if (_.isUndefined(pluginData)) return 3;
+
+  return pluginData.loglevel;
+};
 
 let config = require(configFile);
 let globalConfig = require(globalConfigFile);
+let globalPluginDb = require(globalPluginDbFile);
 let lastMessage = null;
 let messageId = null;
+let logLevel = getPluginLogLevel();
+const logLevelList = ['Emergency', 'Alert', 'Critical', 'Error', 'Warning', 'Notice', 'Informational', 'Debug'];
+
+console.log(`Current LogLevel: ${logLevelList[logLevel]}`);
 
 const miniserverEntries = _.get(globalConfig, 'Miniserver', {});
 const miniserver = _.head(_.values(miniserverEntries));
-const mqtt = new Mqtt(globalConfig);
+const logger = new Logger(logLevel);
+const mqtt = new Mqtt(globalConfig, logger);
 
 fs.watch(configFile, {}, () => {
   delete require.cache[require.resolve(configFile)];
   try {
     config = require(configFile);
-    console.log('Config got changed - load new config');
+    logger.debug('Config got changed - load new config');
+  } catch {
+    //
+  }
+});
+fs.watch(globalPluginDbFile, {}, () => {
+  delete require.cache[require.resolve(globalPluginDbFile)];
+  try {
+    globalPluginDb = require(globalPluginDbFile);
+    logLevel = getPluginLogLevel();
+    logger.loglevel = logLevel;
+    logger.debug('Loaded changed plugindatabase');
   } catch {
     //
   }
@@ -36,7 +63,7 @@ const saveMessageIdToConfig = async (messageId) => {
 
 const hasMqttInstalled = async () => {
   if (_.get(globalConfig, 'Mqtt', null) === null) {
-    throw Error('MQTT is missing');
+    return logger.error('MQTT is missing');
   }
   mqtt.setConfig(globalConfig);
   await mqtt.connect();
@@ -45,8 +72,7 @@ const hasMqttInstalled = async () => {
 
 const fetchStatus = async (messageId) => {
   try {
-    const response = await axios.get(`http://${miniserver.Ipaddress}/jdev/sps/io/${messageId}/getEntries`, {
-      //const response = await axios.get(`http://localhost:3300/admin/express/plugins/message_center/messages`, {
+    const response = await axios.get(`http://${miniserver.Ipaddress}/jdev/sps/io/${messageId}/getEntries/2`, {
       timeout: 900,
       withCredentials: true,
       auth: {
@@ -60,10 +86,10 @@ const fetchStatus = async (messageId) => {
 
       return values.entries.find((entry) => entry.readAt === null);
     } else {
-      console.error('unkown response format', response);
+      logger.error('unkown response format', response);
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
   }
 };
 
@@ -81,7 +107,7 @@ const getMessageId = async () => {
   try {
     await saveMessageIdToConfig(messageCenterId);
   } catch {
-    console.error('cannot write message center id to config file');
+    logger.error('cannot write message center id to config file');
   }
 
   return messageCenterId;
@@ -89,7 +115,7 @@ const getMessageId = async () => {
 
 const getAndSendMessages = async () => {
   if (_.isNil(messageId)) {
-    console.log('Empty Message ID - try to restart the service');
+    logger.debug('Empty Message ID - try to restart the service');
   }
   const message = await fetchStatus(messageId);
   const newMessage = {
@@ -103,7 +129,8 @@ const getAndSendMessages = async () => {
 
   if (!_.isEqual(newMessage, lastMessage)) {
     lastMessage = newMessage;
-    console.log(`New system message on miniserver. sending to topic ${config.topic}:`, newMessage);
+    logger.info(`New system message on miniserver. sending to topic ${config.topic}:`);
+    logger.info(JSON.stringify(newMessage, null, 2));
 
     await mqtt.send(config.topic, JSON.stringify(newMessage));
   }
@@ -113,7 +140,7 @@ const eventLoop = async () => {
   try {
     await getAndSendMessages();
   } catch (error) {
-    console.error('received error while fetching system messages:', error.message);
+    logger.error('received error while fetching system messages:', error);
   }
   await new Promise((resolve) => setTimeout(resolve, config.interval * 1000));
   await eventLoop();

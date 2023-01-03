@@ -7,7 +7,8 @@ const directories = () => {
       config: 'REPLACELBPCONFIGDIR',
       data: 'REPLACELBPDATADIR',
       logdir: 'REPLACELBPLOGDIR',
-      homedir: process.env.LBHOMEDIR
+      homedir: process.env.LBHOMEDIR,
+      systemData: path.join(process.env.LBHOMEDIR, 'data', 'system')
     };
   }
 
@@ -15,7 +16,8 @@ const directories = () => {
     config: path.join(__dirname, '../../config'),
     data: path.join(__dirname, '../../data'),
     logdir: path.join(__dirname, '../../loxberry/logs'),
-    homedir: path.join(__dirname, '../../loxberry')
+    homedir: path.join(__dirname, '../../loxberry'),
+    systemData: path.join(__dirname, '../../loxberry/data/system'),
   };
 };
 
