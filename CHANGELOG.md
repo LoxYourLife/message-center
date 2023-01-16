@@ -1,3 +1,9 @@
+#### 0.0.4 (2023-01-16)
+
+##### Other Changes
+
+* **fix:**  Fix issue that loxberry ip wasn't read correctly (efda8c05)
+
 #### 0.0.3 (2023-01-03)
 
 ##### Other Changes
